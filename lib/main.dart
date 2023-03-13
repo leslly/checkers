@@ -32,32 +32,6 @@ class MyHomePage extends StatefulWidget {//page one
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // int _counter = 0;
-
-  // void _incrementCounter() {
-  //   setState(() {
-  //     if(FloatingActionButton == Icons.add){
-  //       Visibility(
-  //         visible: false,
-  //         child: Image.asset(
-  //           'assets/unsplash.jpg',
-  //           height: 400,
-  //           fit: BoxFit.cover,
-  //         ),
-  //       );
-  //     } else if(FloatingActionButton == Icons.add_circle){
-  //       Visibility(
-  //         visible: true,
-  //         child: Image.asset(
-  //           'assets/unsplash.jpg',
-  //           height: 400,
-  //           fit: BoxFit.cover,
-  //         ),
-  //       );
-  //     }
-  //    // _counter++;
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -85,13 +59,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: _incrementCounter,
-      //   tooltip: 'Increment',
-      //   child: const Icon(Icons.add),
-      //   //child: const Icon(Icons.add_circle),
-      // ),
-
     );
   }
 }
