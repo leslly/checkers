@@ -1,17 +1,19 @@
-import 'package:checkers/next_view.dart';
+import 'package:checkers/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(
-    MainScreen(),
+    MyApp(),
   );
 }
 
-class MainScreen extends StatelessWidget {
-  const MainScreen({Key? key}) : super(key: key);
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.transparent));
     return MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,

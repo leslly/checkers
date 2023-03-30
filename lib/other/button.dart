@@ -1,5 +1,5 @@
-import 'package:checkers/next_view.dart';
-import 'package:checkers/video_view.dart';
+import 'package:checkers/home_screen.dart';
+import 'package:checkers/other/video_view.dart';
 import 'package:flutter/material.dart';
 
 class ButtonView extends StatelessWidget {
