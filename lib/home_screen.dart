@@ -1,100 +1,135 @@
-import 'package:checkers/todo.dart';
-import 'package:checkers/todo_item.dart';
-import 'package:flutter/cupertino.dart';
+import 'dart:convert';
+import 'package:checkers/add_todo.dart';
+import 'package:checkers/todo_service/service.dart';
+import 'package:checkers/utils/snackbar_helper.dart';
+import 'package:checkers/widget/totdo_card.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
-class HomeScreen extends StatelessWidget {
-   HomeScreen({Key? key}) : super(key: key);
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key, required this.todo}) : super(key: key);
 
-  final todoList = ToDo.todoList();
+  final Map? todo;
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+
+  bool isLoading = true;
+
+  List items = [];
+
+ @override
+  void initState() {
+    super.initState();
+    fetchTodo();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: CupertinoColors.white,
-      appBar: buildAppBar(),
-      body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15),
-        child: Column(
-          children: [
-           SearchBox(),
-            Expanded(
-              child: ListView(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(top: 50, bottom: 20),
-                    child: Text(
-                      "All ToDo's",
-                      style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                 for( ToDo todo in todoList)
-                  ToDoItem(todo: todo,),
-                ],
+      appBar: AppBar(
+        centerTitle: true,
+        elevation: 1,
+        title: Text(
+          'ToDo List',
+        ),
+      ),
+      body: Visibility(
+        visible: isLoading,
+        replacement: RefreshIndicator(
+          // pull down to refresh page and show new todo items
+          onRefresh: fetchTodo,
+          // this line of code will have an if-statement that will control the
+          // interface of the todo list app to show a text saying no items yet
+          child: Visibility(
+            visible: items.isNotEmpty,
+            replacement: Center(
+              child: Text(
+                'No todo items yet',
+                style: Theme.of(context).textTheme.headline1,
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget SearchBox() {
-    return  Container(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: TextField(
-        decoration: InputDecoration(
-            contentPadding: EdgeInsets.all(0),
-            prefixIcon: Icon(
-              Icons.search_rounded,
-              color: CupertinoColors.black,
-              size: 20,
-            ),
-            prefixIconConstraints: BoxConstraints(
-              maxHeight: 20,
-              minWidth: 25,
-            ),
-            border: InputBorder.none,
-            hintText: 'Search',
-            hintStyle: TextStyle(
-              color: Colors.grey,
-            )
-        ),
-      ),
-    );
-  }
-
-  AppBar buildAppBar() {
-    return AppBar(
-      elevation: 0,
-      backgroundColor: CupertinoColors.white,
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Icon(
-              Icons.menu,
-          color: CupertinoColors.black,
-            size: 30,
+            child: ListView.builder(
+              padding: EdgeInsets.all(12),
+              itemCount: items.length,
+                itemBuilder: (context, index) {
+                final item = items[index] as Map;
+                final id = item['_id'] as String;
+              return TodoCard(
+                  index: index,
+                  item: item,
+                  navigateEdit: navigateToEditPage,
+                  deleteById: deleteById,
+              );
+            }),
           ),
-          Container(
-            height: 48,
-            width: 48,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image.asset(
-                'assets/unslpash.jpg',
-              ),
-            ),
-          )
-        ],
+        ),
+        child: const Center(child: CircularProgressIndicator(),),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+          onPressed: navigateToAddPage,
+          label: Text('Add Item'),
       ),
     );
   }
+
+ Future<void> deleteById(String id) async {
+
+   // Delete item (Request delete)
+   final isSuccess = await TodoService.deleteById(id);
+
+   if(isSuccess) {
+     // Remove item from the list
+     final filtered = items.where((element) => element['_id'] != id).toList();
+     setState(() {
+       items = filtered;
+     });
+   } else {
+     // show error
+     showErrorMessage( context, errorMessage: 'Cannot delete right now');
+   }
+
+  }
+
+  Future<void> navigateToAddPage() async {
+    // I don't really see the use of making a different route to navigate but
+    // the navigation could have been done the normal way without this route
+    final route = MaterialPageRoute(builder: (context) => AddToDo(),);
+    await Navigator.push(context, route);
+    setState(() {
+      isLoading = true;
+    });
+    fetchTodo();
+  }
+
+  Future<void> fetchTodo() async {
+    final response = TodoService.fetchTodo();
+    if(response !=null) {
+
+      setState(() {
+        items = response as List;
+      });
+    } else {
+      showErrorMessage(context, errorMessage: 'Something went wrong');
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  Future<void> navigateToEditPage(Map item) async { // I see the need of the route now
+    // I don't really see the use of making a different route to navigate but
+    // the navigation could have been done the normal way without this route
+    final route = MaterialPageRoute(builder: (context) => AddToDo(todo: item),);
+    await Navigator.push(context, route);
+    setState(() {
+      isLoading = true;
+    });
+    fetchTodo();
+  }
+
 }
+
