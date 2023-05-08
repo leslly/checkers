@@ -17,7 +17,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
-  bool isLoading = true;
+  bool isLoading = false;
 
   List items = [];
 
@@ -49,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
             replacement: Center(
               child: Text(
                 'No todo items yet',
-                style: Theme.of(context).textTheme.headline1,
+                style: Theme.of(context).textTheme.headline3,
               ),
             ),
             child: ListView.builder(
