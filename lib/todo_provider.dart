@@ -23,7 +23,6 @@ class TodoProvider extends ChangeNotifier {
 
    final items = response.data['items'];
 
-
    for(int i = 0; i < items.length; i++){
     loadedData.add(TodoModel.fromMap(items[i]));
    }

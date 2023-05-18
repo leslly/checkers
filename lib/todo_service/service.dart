@@ -7,19 +7,21 @@ import 'package:http/http.dart' as http;
 class TodoService {
 
   static Future<bool> deleteById(String id) async {
-    // Delete item (Request delete)
+    // Delete item (nesgRequest delete)
     final url = 'https://api.nstack.in/v1/todos/$id';
     final uri = Uri.parse(url);
     final response = await http.delete(uri);
     return (response.statusCode == 200 || response.statusCode == 201);
   }
 
+  // get method
   static Future<List?> fetchTodo() async {
     final url = 'http://api.nstack.in/v1/todos?page=1&limit=10';
     final uri = Uri.parse(url);
     final response = await http.get(uri);
     if(response.statusCode == 201 || response.statusCode == 200) {
       final json = jsonDecode(response.body) as Map;
+      //jsonDecode parses the string and returns the resulting Json object
       final result = json['items'] as List;
       return result;
     } else {
@@ -37,6 +39,7 @@ class TodoService {
     final response = await http.put(
       uri,
       body: jsonEncode(body),
+      // json encode converts object to JSON string
       headers: {'Content-Type': 'application/json'},
     );
     return (response.statusCode == 200 || response.statusCode ==201);
