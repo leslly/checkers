@@ -28,7 +28,12 @@ class _AddToDoState extends State<AddToDo> {
   @override
   void initState() {
     super.initState();
-    final todo = widget.todo;
+    final todo = widget.todo; 
+   /*
+   * so what will happen here is that if the todo item is empty
+   * then user is editing that todo item
+   * the title and description are editable
+   */
     if(todo != null) {
       isEditing = true;
       final title = todo['title'];
